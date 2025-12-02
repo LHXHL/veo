@@ -2056,9 +2056,12 @@ interlib电子资源馆外访问系统:
     - "contains(body, 'cmdACT=ipLogin')"
 
 润乾报表:
+  path: "/InputServlet?action=13"
   dsl:
     - "contains(body, 'demo/reportJsp/showReport.jsp')"
     - "contains(body, 'dashboard/dashboard.rpx')"
+    - "contains(body, 'ServletException','NullPointerException')"
+    - "contains(body, 'alert(null)')"
 
 超图软件SuperMap-iServer:
   dsl:
@@ -3436,3 +3439,7 @@ ArcGIS:
 阿里云OSS:
   dsl:
   - "contains_all(body, 'RequestId','Message','HostId','EC')"
+
+新点OA:
+  dsl:
+  - "contains(body, '新点政务','epoint','loginaction/getLoginData')"

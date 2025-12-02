@@ -398,6 +398,48 @@ func (c *Collector) isSupportedScheme(scheme string) bool {
 // 私有辅助方法 - URL参数清理
 // ===========================================
 
+// cleanPathID 清理URL路径中的末尾ID（纯数字）
+// 如果进行了修改，返回true
+func (c *Collector) cleanPathID(u *url.URL) bool {
+	path := u.Path
+	if path == "" || path == "/" {
+		return false
+	}
+
+	// 移除末尾斜杠以便正确提取最后一段
+	trimmedPath := strings.TrimRight(path, "/")
+
+	// 查找最后一个分隔符
+	lastSlash := strings.LastIndex(trimmedPath, "/")
+	if lastSlash == -1 {
+		return false
+	}
+
+	// 提取最后一段
+	lastSegment := trimmedPath[lastSlash+1:]
+
+	// 检查是否为纯数字
+	isNumeric := true
+	if lastSegment == "" {
+		isNumeric = false
+	} else {
+		for _, r := range lastSegment {
+			if r < '0' || r > '9' {
+				isNumeric = false
+				break
+			}
+		}
+	}
+
+	if isNumeric {
+		// 是数字，去除最后一段
+		u.Path = trimmedPath[:lastSlash]
+		return true
+	}
+
+	return false
+}
+
 // cleanURLParams 清理URL参数，移除无效参数
 func (c *Collector) cleanURLParams(rawURL string) string {
 	// 首先验证URL格式是否合法，并获取修复后的URL
@@ -418,8 +460,11 @@ func (c *Collector) cleanURLParams(rawURL string) string {
 		return ""
 	}
 
-	// 如果没有查询参数，返回修复后的URL
-	if parsedURL.RawQuery == "" {
+	// 尝试清理路径中的数字ID
+	pathCleaned := c.cleanPathID(parsedURL)
+
+	// 如果没有查询参数，且路径未被清理，返回修复后的URL
+	if parsedURL.RawQuery == "" && !pathCleaned {
 		return fixedURL
 	}
 

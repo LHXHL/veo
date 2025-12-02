@@ -841,6 +841,8 @@ func (e *Engine) outputNoMatchInfo(response *HTTPResponse) {
 
 		logMsg.WriteString(" ")
 		logMsg.WriteString(formatter.FormatStatusCode(response.StatusCode))
+		logMsg.WriteString(" ")
+		logMsg.WriteString(formatter.FormatContentType(response.ContentType))
 
 		logger.Info(logMsg.String())
 	}
@@ -878,6 +880,9 @@ func (e *Engine) outputFingerprintMatches(matches []*FingerprintMatch, response 
 			title = "无标题"
 		}
 		logMsg.WriteString(formatter.FormatTitle(title))
+		logMsg.WriteString(" ")
+		logMsg.WriteString(formatter.FormatContentType(response.ContentType))
+
 		for _, match := range matches {
 			if match == nil {
 				continue

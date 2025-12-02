@@ -129,6 +129,9 @@ func (da *DirscanAddon) TriggerScan() (*ScanResult, error) {
 		return nil, err
 	}
 
+	// 扫描完成后清空已采集的URL，等待下一轮采集
+	da.collector.ClearURLMap()
+
 	return result, nil
 }
 

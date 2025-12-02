@@ -146,12 +146,13 @@ func Execute(rawURL string, fetcher HTTPFetcherFull, config *Config) (*interface
 			ContentLength:   int64(len(body)),
 			Length:          int64(len(body)),
 			IsDirectory:     strings.HasSuffix(currentURL, "/"),
+			ContentType:     GetHeaderFirst(headers, "Content-Type"),
 		}
-		
+
 		// 提取标题
 		titleExtractor := shared.NewTitleExtractor()
 		response.Title = titleExtractor.ExtractTitle(body)
-		
+
 		// 如果不跟随重定向，直接返回
 		if !config.FollowRedirect {
 			return response, nil
@@ -262,7 +263,7 @@ func FollowClientRedirect(response *interfaces.HTTPResponse, fetcher HTTPFetcher
 		StatusCode:      statusCode,
 		Body:            body,
 		ResponseBody:    body,
-		ContentType:     "",
+		ContentType:     GetHeaderFirst(headers, "Content-Type"),
 		ContentLength:   int64(len(body)),
 		Length:          int64(len(body)),
 		Title:           title,
